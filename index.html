@@ -1481,6 +1481,18 @@ async function pushToFirebase() {
         doc.remote = true;
       }
     }
+    // race-condition fix: remote-এ যদি নতুন কিছু (যেমন Telegram bot থেকে) যুক্ত হয়ে থাকে,
+    // সেটা push করার আগে merge করে নিচ্ছি যাতে হারিয়ে না যায়
+    try {
+      const snap = await window._fbGet(window._fbRef(fbDb, 'vault/data'));
+      if (snap.exists()) {
+        const remote = snap.val();
+        DB.transactions = mergeById(DB.transactions, remote.transactions);
+        DB.diary        = mergeById(DB.diary, remote.diary);
+        DB.tasks        = mergeById(DB.tasks, remote.tasks);
+      }
+    } catch(e) { /* remote read fail হলেও local দিয়ে এগিয়ে যাই */ }
+
     const payload = {
       diary:        DB.diary,
       transactions: DB.transactions,
@@ -1489,10 +1501,21 @@ async function pushToFirebase() {
       updatedAt:    Date.now()
     };
     await window._fbSet(window._fbRef(fbDb, 'vault/data'), payload);
+    saveDB(); renderAll();
   } catch(e) {
     setSyncStatus(false, 'Sync ব্যর্থ');
     showToast('Firebase sync ব্যর্থ: ' + e.message, 'error');
   }
+}
+
+// দুটো array কে id অনুযায়ী merge করে — কোনোটা হারাবে না
+function mergeById(localArr, remoteArr) {
+  localArr  = localArr  || [];
+  remoteArr = remoteArr || [];
+  const map = new Map();
+  for (const item of remoteArr) map.set(String(item.id), item);
+  for (const item of localArr)  map.set(String(item.id), item); // local পরিবর্তন প্রাধান্য পাবে
+  return Array.from(map.values()).sort((a,b) => (b.id||0) - (a.id||0));
 }
 
 async function pullFromFirebase() {
@@ -1670,9 +1693,9 @@ function formatDate(dateStr) {
   } catch { return dateStr; }
 }
 
-// Start telegram polling after login
-document.getElementById('app').addEventListener('DOMSubtreeModified', () => {}, { once: true });
-setTimeout(pollTelegram, 5000);
+// Telegram polling বন্ধ — Cloudflare Worker webhook এখন bot commands handle করে।
+// website ও worker একসাথে getUpdates করলে Telegram 409 conflict error দেয়।
+// setTimeout(pollTelegram, 5000);
 
 setSyncStatus(true, 'প্রস্তুত');
 </script>
