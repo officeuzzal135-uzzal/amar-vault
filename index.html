@@ -860,6 +860,8 @@ function loadDB() {
 // ══════════════════════════════════════════
 //  AUTH
 // ══════════════════════════════════════════
+let fbApp = null, fbDb = null;
+
 loadDB();
 
 (function autoLogin() {
@@ -1393,9 +1395,7 @@ function loadSettings() {
 // ══════════════════════════════════════════
 //  FIREBASE
 // ══════════════════════════════════════════
-let fbApp = null, fbDb = null;
-
-async function initFirebase(cfg) {
+// fbApp/fbDb declared near top to avoid TDZ on autoLogin
   try {
     // Firebase SDK dynamically import
     const { initializeApp, getApps } = await import('https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js');
