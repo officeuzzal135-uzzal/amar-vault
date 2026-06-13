@@ -1,0 +1,1704 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>আমার ভল্ট</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg:        #0f1117;
+    --surface:   #1a1d27;
+    --card:      #21253a;
+    --border:    #2e3350;
+    --accent:    #4f7cff;
+    --accent2:   #7c5cfc;
+    --green:     #3ecf8e;
+    --red:       #f87171;
+    --yellow:    #fbbf24;
+    --text:      #e8eaf6;
+    --muted:     #8892b0;
+    --radius:    14px;
+    --shadow:    0 4px 24px rgba(0,0,0,0.4);
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: 'Hind Siliguri', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+    font-size: 15px;
+  }
+
+  /* ── AUTH SCREEN ── */
+  #auth-screen {
+    display: flex; align-items: center; justify-content: center;
+    min-height: 100vh;
+    background: radial-gradient(ellipse at 30% 20%, #1a2060 0%, var(--bg) 60%);
+  }
+  .auth-box {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 20px;
+    padding: 48px 40px;
+    width: 100%; max-width: 400px;
+    box-shadow: var(--shadow);
+    text-align: center;
+  }
+  .auth-logo { font-size: 48px; margin-bottom: 12px; }
+  .auth-title { font-size: 24px; font-weight: 700; margin-bottom: 6px; }
+  .auth-sub { color: var(--muted); font-size: 14px; margin-bottom: 32px; }
+  .auth-input {
+    width: 100%;
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 14px 16px;
+    color: var(--text);
+    font-size: 16px;
+    font-family: 'JetBrains Mono', monospace;
+    letter-spacing: 4px;
+    text-align: center;
+    margin-bottom: 16px;
+    outline: none;
+    transition: border-color 0.2s;
+  }
+  .auth-input:focus { border-color: var(--accent); }
+  .btn-primary {
+    width: 100%;
+    background: linear-gradient(135deg, var(--accent), var(--accent2));
+    border: none;
+    border-radius: 10px;
+    padding: 14px;
+    color: #fff;
+    font-size: 16px;
+    font-family: 'Hind Siliguri', sans-serif;
+    font-weight: 600;
+    cursor: pointer;
+    transition: opacity 0.2s, transform 0.1s;
+    margin-bottom: 12px;
+  }
+  .btn-primary:hover { opacity: 0.9; }
+  .btn-primary:active { transform: scale(0.98); }
+  .btn-secondary {
+    width: 100%;
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 12px;
+    color: var(--muted);
+    font-size: 14px;
+    font-family: 'Hind Siliguri', sans-serif;
+    cursor: pointer;
+    transition: background 0.2s;
+  }
+  .btn-secondary:hover { background: var(--border); color: var(--text); }
+  .auth-error {
+    color: var(--red); font-size: 13px; margin-top: 10px;
+    min-height: 20px;
+  }
+
+  /* ── APP SHELL ── */
+  #app { display: none; flex-direction: column; min-height: 100vh; }
+  .topbar {
+    background: var(--surface);
+    border-bottom: 1px solid var(--border);
+    padding: 0 24px;
+    height: 58px;
+    display: flex; align-items: center; justify-content: space-between;
+    position: sticky; top: 0; z-index: 100;
+  }
+  .topbar-title { font-size: 18px; font-weight: 700; letter-spacing: -0.3px; }
+  .topbar-title span { color: var(--accent); }
+  .topbar-right { display: flex; align-items: center; gap: 12px; }
+  .sync-status {
+    font-size: 12px; color: var(--muted);
+    display: flex; align-items: center; gap: 5px;
+  }
+  .sync-dot {
+    width: 7px; height: 7px; border-radius: 50%;
+    background: var(--green);
+  }
+  .sync-dot.offline { background: var(--red); }
+  .logout-btn {
+    background: none; border: 1px solid var(--border);
+    border-radius: 8px; padding: 6px 14px;
+    color: var(--muted); font-size: 13px; cursor: pointer;
+    font-family: 'Hind Siliguri', sans-serif;
+    transition: all 0.2s;
+  }
+  .logout-btn:hover { border-color: var(--red); color: var(--red); }
+
+  /* ── NAV TABS ── */
+  .nav-tabs {
+    display: flex;
+    background: var(--surface);
+    border-bottom: 1px solid var(--border);
+    padding: 0 16px;
+    gap: 4px;
+    overflow-x: auto;
+  }
+  .nav-tab {
+    padding: 12px 20px;
+    border: none; background: none;
+    color: var(--muted); font-size: 14px; font-weight: 500;
+    font-family: 'Hind Siliguri', sans-serif;
+    cursor: pointer; white-space: nowrap;
+    border-bottom: 2px solid transparent;
+    transition: all 0.2s;
+  }
+  .nav-tab.active { color: var(--accent); border-bottom-color: var(--accent); }
+  .nav-tab:hover:not(.active) { color: var(--text); }
+
+  /* ── CONTENT AREA ── */
+  .content { flex: 1; padding: 24px; max-width: 900px; margin: 0 auto; width: 100%; }
+  .section { display: none; }
+  .section.active { display: block; }
+  .section-header {
+    display: flex; align-items: center; justify-content: space-between;
+    margin-bottom: 20px;
+  }
+  .section-title { font-size: 20px; font-weight: 700; }
+
+  /* ── CARDS ── */
+  .card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 20px;
+    margin-bottom: 16px;
+  }
+  .card-header {
+    display: flex; align-items: center; justify-content: space-between;
+    margin-bottom: 14px;
+  }
+  .card-title { font-weight: 600; font-size: 15px; }
+
+  /* ── FORMS ── */
+  .form-group { margin-bottom: 14px; }
+  label { display: block; font-size: 13px; color: var(--muted); margin-bottom: 6px; }
+  input[type="text"], input[type="date"], input[type="number"],
+  input[type="time"], textarea, select {
+    width: 100%;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 10px 14px;
+    color: var(--text);
+    font-size: 14px;
+    font-family: 'Hind Siliguri', sans-serif;
+    outline: none;
+    transition: border-color 0.2s;
+  }
+  input:focus, textarea:focus, select:focus { border-color: var(--accent); }
+  textarea { resize: vertical; min-height: 100px; }
+  select option { background: var(--card); }
+
+  .btn-sm {
+    padding: 7px 16px;
+    background: linear-gradient(135deg, var(--accent), var(--accent2));
+    border: none; border-radius: 8px;
+    color: #fff; font-size: 13px; font-weight: 600;
+    font-family: 'Hind Siliguri', sans-serif;
+    cursor: pointer; transition: opacity 0.2s;
+  }
+  .btn-sm:hover { opacity: 0.85; }
+  .btn-danger {
+    padding: 6px 12px;
+    background: none;
+    border: 1px solid var(--red);
+    border-radius: 7px;
+    color: var(--red); font-size: 12px;
+    font-family: 'Hind Siliguri', sans-serif;
+    cursor: pointer; transition: background 0.2s;
+  }
+  .btn-danger:hover { background: rgba(248,113,113,0.1); }
+
+  /* ── DOCUMENT SECTION ── */
+  .upload-zone {
+    border: 2px dashed var(--border);
+    border-radius: var(--radius);
+    padding: 40px 20px;
+    text-align: center;
+    cursor: pointer;
+    transition: all 0.2s;
+    margin-bottom: 20px;
+  }
+  .upload-zone:hover, .upload-zone.drag { border-color: var(--accent); background: rgba(79,124,255,0.05); }
+  .upload-icon { font-size: 36px; margin-bottom: 10px; }
+  .upload-text { color: var(--muted); font-size: 14px; }
+  .upload-text strong { color: var(--accent); }
+  #file-input { display: none; }
+
+  .doc-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 14px; }
+  .doc-item {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 16px;
+    display: flex; flex-direction: column; align-items: center;
+    gap: 10px; text-align: center;
+    transition: border-color 0.2s;
+  }
+  .doc-item:hover { border-color: var(--accent); }
+  .doc-icon { font-size: 32px; }
+  .doc-name {
+    font-size: 12px; color: var(--muted);
+    word-break: break-all;
+    max-width: 100%;
+  }
+  .doc-name strong { color: var(--text); display: block; font-size: 13px; margin-bottom: 2px; }
+  .doc-actions { display: flex; gap: 6px; margin-top: 4px; }
+  .btn-icon {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 7px;
+    padding: 5px 10px;
+    color: var(--muted); font-size: 13px;
+    cursor: pointer; transition: all 0.2s;
+  }
+  .btn-icon:hover { border-color: var(--accent); color: var(--accent); }
+
+  /* ── DIARY SECTION ── */
+  .diary-entry-preview {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 16px; margin-bottom: 12px;
+    cursor: pointer; transition: border-color 0.2s;
+  }
+  .diary-entry-preview:hover { border-color: var(--accent); }
+  .diary-date { font-size: 12px; color: var(--accent); margin-bottom: 6px; font-family: 'JetBrains Mono'; }
+  .diary-preview-text { font-size: 14px; color: var(--muted); line-height: 1.6; }
+  .diary-mood {
+    display: inline-block;
+    background: var(--surface);
+    border-radius: 20px; padding: 3px 12px;
+    font-size: 12px; margin-top: 8px;
+  }
+  .mood-row { display: flex; gap: 10px; margin-bottom: 14px; flex-wrap: wrap; }
+  .mood-btn {
+    background: var(--surface); border: 1px solid var(--border);
+    border-radius: 20px; padding: 6px 16px;
+    cursor: pointer; font-size: 14px; transition: all 0.2s;
+  }
+  .mood-btn.selected { border-color: var(--accent); background: rgba(79,124,255,0.15); }
+
+  /* ── HISAB (ACCOUNTS) SECTION ── */
+  .summary-row {
+    display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin-bottom: 20px;
+  }
+  .summary-card {
+    background: var(--card); border: 1px solid var(--border);
+    border-radius: 12px; padding: 16px; text-align: center;
+  }
+  .summary-amount { font-size: 22px; font-weight: 700; font-family: 'JetBrains Mono'; }
+  .summary-amount.income { color: var(--green); }
+  .summary-amount.expense { color: var(--red); }
+  .summary-amount.balance { color: var(--accent); }
+  .summary-label { font-size: 12px; color: var(--muted); margin-top: 4px; }
+
+  .trans-list { }
+  .trans-item {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 12px 16px;
+    background: var(--card); border: 1px solid var(--border);
+    border-radius: 10px; margin-bottom: 8px;
+  }
+  .trans-left { display: flex; align-items: center; gap: 12px; }
+  .trans-cat {
+    width: 36px; height: 36px; border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 16px; flex-shrink: 0;
+  }
+  .trans-cat.income { background: rgba(62,207,142,0.15); }
+  .trans-cat.expense { background: rgba(248,113,113,0.15); }
+  .trans-title { font-size: 14px; font-weight: 500; }
+  .trans-date { font-size: 12px; color: var(--muted); }
+  .trans-amount { font-size: 15px; font-weight: 700; font-family: 'JetBrains Mono'; }
+  .trans-amount.income { color: var(--green); }
+  .trans-amount.expense { color: var(--red); }
+
+  /* ── TASK SECTION ── */
+  .task-item {
+    display: flex; align-items: flex-start; gap: 12px;
+    padding: 14px 16px;
+    background: var(--card); border: 1px solid var(--border);
+    border-radius: 10px; margin-bottom: 8px;
+    transition: border-color 0.2s;
+  }
+  .task-item.done { opacity: 0.5; }
+  .task-check {
+    width: 20px; height: 20px; border-radius: 50%;
+    border: 2px solid var(--border);
+    flex-shrink: 0; cursor: pointer;
+    display: flex; align-items: center; justify-content: center;
+    transition: all 0.2s; margin-top: 1px;
+  }
+  .task-check.done { background: var(--green); border-color: var(--green); color: white; font-size: 11px; }
+  .task-body { flex: 1; }
+  .task-title { font-size: 14px; font-weight: 500; }
+  .task-meta { font-size: 12px; color: var(--muted); margin-top: 4px; }
+  .task-priority {
+    display: inline-block; padding: 2px 10px;
+    border-radius: 20px; font-size: 11px; font-weight: 600;
+    margin-left: 6px;
+  }
+  .task-priority.high { background: rgba(248,113,113,0.15); color: var(--red); }
+  .task-priority.medium { background: rgba(251,191,36,0.15); color: var(--yellow); }
+  .task-priority.low { background: rgba(62,207,142,0.15); color: var(--green); }
+
+  /* ── SETTINGS / TELEGRAM ── */
+  .settings-section { margin-bottom: 24px; }
+  .settings-label {
+    font-size: 11px; font-weight: 700; color: var(--muted);
+    text-transform: uppercase; letter-spacing: 1px;
+    margin-bottom: 12px;
+  }
+  .settings-row {
+    display: flex; align-items: center; gap: 10px; margin-bottom: 10px;
+  }
+  .settings-row input { flex: 1; }
+  .status-badge {
+    padding: 4px 12px; border-radius: 20px;
+    font-size: 12px; font-weight: 600;
+  }
+  .status-badge.ok { background: rgba(62,207,142,0.15); color: var(--green); }
+  .status-badge.err { background: rgba(248,113,113,0.15); color: var(--red); }
+
+  /* ── MODAL ── */
+  .modal-overlay {
+    display: none; position: fixed; inset: 0;
+    background: rgba(0,0,0,0.6); backdrop-filter: blur(4px);
+    z-index: 200; align-items: center; justify-content: center;
+  }
+  .modal-overlay.show { display: flex; }
+  .modal {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 18px;
+    padding: 28px;
+    width: 100%; max-width: 500px; margin: 16px;
+    max-height: 90vh; overflow-y: auto;
+    box-shadow: var(--shadow);
+  }
+  .modal-header {
+    display: flex; align-items: center; justify-content: space-between;
+    margin-bottom: 20px;
+  }
+  .modal-title { font-size: 17px; font-weight: 700; }
+  .modal-close {
+    background: none; border: none;
+    color: var(--muted); font-size: 20px; cursor: pointer;
+    line-height: 1; padding: 4px;
+  }
+  .modal-actions { display: flex; gap: 10px; margin-top: 20px; justify-content: flex-end; }
+
+  /* ── TOAST ── */
+  #toast-container {
+    position: fixed; bottom: 24px; right: 24px;
+    z-index: 300; display: flex; flex-direction: column; gap: 8px;
+  }
+  .toast {
+    background: var(--card); border: 1px solid var(--border);
+    border-radius: 10px; padding: 12px 20px;
+    font-size: 14px; box-shadow: var(--shadow);
+    animation: slideIn 0.3s ease;
+    max-width: 300px;
+  }
+  .toast.success { border-left: 3px solid var(--green); }
+  .toast.error { border-left: 3px solid var(--red); }
+  @keyframes slideIn {
+    from { transform: translateX(40px); opacity: 0; }
+    to { transform: translateX(0); opacity: 1; }
+  }
+
+  /* ── EMPTY STATE ── */
+  .empty-state {
+    text-align: center; padding: 48px 20px; color: var(--muted);
+  }
+  .empty-icon { font-size: 48px; margin-bottom: 12px; }
+  .empty-text { font-size: 15px; }
+
+  /* ── RESPONSIVE ── */
+  @media (max-width: 600px) {
+    .content { padding: 16px; }
+    .summary-row { grid-template-columns: repeat(3, 1fr); gap: 8px; }
+    .summary-amount { font-size: 16px; }
+    .doc-grid { grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); }
+    .auth-box { padding: 32px 24px; }
+    .topbar { padding: 0 14px; }
+    .nav-tab { padding: 12px 14px; }
+  }
+  .filter-row { display: flex; gap: 8px; margin-bottom: 16px; flex-wrap: wrap; }
+  .filter-chip {
+    background: var(--surface); border: 1px solid var(--border);
+    border-radius: 20px; padding: 5px 14px;
+    color: var(--muted); font-size: 13px; cursor: pointer;
+    font-family: 'Hind Siliguri', sans-serif;
+    transition: all 0.2s;
+  }
+  .filter-chip.active { border-color: var(--accent); color: var(--accent); background: rgba(79,124,255,0.1); }
+</style>
+</head>
+<body>
+
+<!-- ══════════════ AUTH SCREEN ══════════════ -->
+<div id="auth-screen">
+  <div class="auth-box">
+    <div class="auth-logo">🔐</div>
+    <div class="auth-title">আমার ভল্ট</div>
+    <div class="auth-sub">তোমার ব্যক্তিগত নিরাপদ জায়গা</div>
+    <input class="auth-input" type="password" id="pwd-input" placeholder="••••••••" maxlength="20">
+    <button class="btn-primary" onclick="tryLogin()">প্রবেশ করো</button>
+    <button class="btn-secondary" id="fp-btn" onclick="tryFingerprint()" style="display:none">
+      👆 আঙুলের ছাপ দিয়ে প্রবেশ
+    </button>
+    <div class="auth-error" id="auth-error"></div>
+  </div>
+</div>
+
+<!-- ══════════════ MAIN APP ══════════════ -->
+<div id="app">
+  <div class="topbar">
+    <div class="topbar-title">আমার <span>ভল্ট</span></div>
+    <div class="topbar-right">
+      <div class="sync-status">
+        <div class="sync-dot" id="sync-dot"></div>
+        <span id="sync-text">লোড হচ্ছে...</span>
+      </div>
+      <button class="logout-btn" onclick="logout()">লগআউট</button>
+    </div>
+  </div>
+
+  <div class="nav-tabs">
+    <button class="nav-tab active" onclick="showTab('docs')">📁 ডকুমেন্ট</button>
+    <button class="nav-tab" onclick="showTab('diary')">📔 ডায়েরি</button>
+    <button class="nav-tab" onclick="showTab('hisab')">💰 হিসাব</button>
+    <button class="nav-tab" onclick="showTab('tasks')">✅ কাজ</button>
+    <button class="nav-tab" onclick="showTab('settings')">⚙️ সেটিং</button>
+  </div>
+
+  <div class="content">
+
+    <!-- ── DOCUMENTS ── -->
+    <div id="section-docs" class="section active">
+      <div class="section-header">
+        <div class="section-title">গুরুত্বপূর্ণ ফাইল</div>
+        <button class="btn-sm" onclick="window.open('https://drive.google.com', '_blank')">Google Drive</button>
+      </div>
+      <div class="settings-card" style="margin-bottom:16px">
+        <div class="settings-label">🔗 Drive document reference</div>
+        <div class="form-group">
+          <label>বিষয় / নাম</label>
+          <input type="text" id="drive-doc-title" placeholder="যেমন: জমির দলিল, মেডিকেল রিপোর্ট">
+        </div>
+        <div class="form-group">
+          <label>তারিখ</label>
+          <input type="date" id="drive-doc-date">
+        </div>
+        <div class="form-group">
+          <label>Google Drive link</label>
+          <input type="text" id="drive-doc-url" placeholder="Drive file link paste করো">
+        </div>
+        <div class="form-group">
+          <label>নোট</label>
+          <textarea id="drive-doc-note" placeholder="ডায়েরির বিষয় বা দরকারি কথা লিখে রাখো..." style="min-height:70px"></textarea>
+        </div>
+        <button class="btn-sm" onclick="saveDriveDocLink()">Link সংরক্ষণ করো</button>
+      </div>
+      <div class="filter-row" id="doc-filter-row"></div>
+      <div class="doc-grid" id="doc-grid"></div>
+    </div>
+
+    <!-- ── DIARY ── -->
+    <div id="section-diary" class="section">
+      <div class="section-header">
+        <div class="section-title">ডায়েরি</div>
+        <button class="btn-sm" onclick="openDiaryModal()">+ নতুন লেখা</button>
+      </div>
+      <div id="diary-list"></div>
+    </div>
+
+    <!-- ── HISAB ── -->
+    <div id="section-hisab" class="section">
+      <div class="section-header">
+        <div class="section-title">আয়-ব্যয় হিসাব</div>
+        <button class="btn-sm" onclick="openHisabModal()">+ লেনদেন</button>
+      </div>
+      <div class="summary-row">
+        <div class="summary-card">
+          <div class="summary-amount income" id="total-income">৳০</div>
+          <div class="summary-label">মোট আয়</div>
+        </div>
+        <div class="summary-card">
+          <div class="summary-amount expense" id="total-expense">৳০</div>
+          <div class="summary-label">মোট খরচ</div>
+        </div>
+        <div class="summary-card">
+          <div class="summary-amount balance" id="total-balance">৳০</div>
+          <div class="summary-label">ব্যালেন্স</div>
+        </div>
+      </div>
+      <div class="filter-row">
+        <button class="filter-chip active" onclick="filterHisab('all',this)">সব</button>
+        <button class="filter-chip" onclick="filterHisab('income',this)">আয়</button>
+        <button class="filter-chip" onclick="filterHisab('expense',this)">খরচ</button>
+      </div>
+      <div class="trans-list" id="trans-list"></div>
+    </div>
+
+    <!-- ── TASKS ── -->
+    <div id="section-tasks" class="section">
+      <div class="section-header">
+        <div class="section-title">কাজের তালিকা</div>
+        <button class="btn-sm" onclick="openTaskModal()">+ নতুন কাজ</button>
+      </div>
+      <div class="filter-row">
+        <button class="filter-chip active" onclick="filterTasks('all',this)">সব</button>
+        <button class="filter-chip" onclick="filterTasks('pending',this)">বাকি</button>
+        <button class="filter-chip" onclick="filterTasks('done',this)">সম্পন্ন</button>
+        <button class="filter-chip" onclick="filterTasks('high',this)">জরুরি</button>
+      </div>
+      <div id="task-list"></div>
+    </div>
+
+    <!-- ── SETTINGS ── -->
+    <div id="section-settings" class="section">
+      <div class="settings-section">
+        <div class="settings-label">🔑 পাসওয়ার্ড</div>
+        <div class="card">
+          <div class="form-group">
+            <label>নতুন পাসওয়ার্ড</label>
+            <input type="password" id="new-pwd" placeholder="নতুন পাসওয়ার্ড">
+          </div>
+          <div class="form-group">
+            <label>নিশ্চিত করো</label>
+            <input type="password" id="confirm-pwd" placeholder="আবার লেখো">
+          </div>
+          <button class="btn-sm" onclick="changePwd()">পাসওয়ার্ড বদলাও</button>
+        </div>
+      </div>
+
+      <div class="settings-section">
+        <div class="settings-label">🔥 Firebase সংযোগ</div>
+        <div class="card">
+          <div id="fb-connected-view" style="display:none">
+            <div style="display:flex;align-items:center;gap:10px;margin-bottom:14px">
+              <span class="status-badge ok">🔥 Firebase সংযুক্ত</span>
+              <span id="fb-project-name" style="font-size:13px;color:var(--muted)"></span>
+            </div>
+            <div style="display:flex;gap:8px;flex-wrap:wrap">
+              <button class="btn-sm" onclick="forceSyncFirebase()" style="background:linear-gradient(135deg,#f97316,#ef4444)">☁️ এখনই Sync করো</button>
+              <button class="btn-sm" onclick="disconnectFirebase()" style="background:var(--card);border:1px solid var(--border);color:var(--muted)">সংযোগ বিচ্ছিন্ন করো</button>
+            </div>
+          </div>
+          <div id="fb-setup-view">
+            <div style="font-size:13px;color:var(--muted);margin-bottom:14px;line-height:1.7">
+              Firebase Console → Project Settings → Your apps → Web app → Config থেকে নিচের তথ্যগুলো নাও।
+              <br><a href="https://console.firebase.google.com" target="_blank" style="color:var(--accent)">🔗 Firebase Console খোলো</a>
+            </div>
+            <div class="form-group">
+              <label>API Key</label>
+              <input type="text" id="fb-apikey" placeholder="AIzaSy...">
+            </div>
+            <div class="form-group">
+              <label>Auth Domain</label>
+              <input type="text" id="fb-authdomain" placeholder="your-project.firebaseapp.com">
+            </div>
+            <div class="form-group">
+              <label>Database URL</label>
+              <input type="text" id="fb-dburl" placeholder="https://your-project-default-rtdb.firebaseio.com">
+            </div>
+            <div class="form-group">
+              <label>Project ID</label>
+              <input type="text" id="fb-projectid" placeholder="your-project-id">
+            </div>
+            <div class="settings-row">
+              <button class="btn-sm" onclick="connectFirebase()" style="background:linear-gradient(135deg,#f97316,#ef4444)">🔥 সংযোগ করো</button>
+              <span id="fb-status"></span>
+            </div>
+          </div>
+          <div style="font-size:12px;color:var(--muted);margin-top:12px;line-height:1.6;border-top:1px solid var(--border);padding-top:12px">
+            ⚠️ Firebase Console এ <strong style="color:var(--text)">Realtime Database</strong> চালু করো এবং Rules এ <code style="background:var(--surface);padding:1px 5px;border-radius:4px">".read": true, ".write": true</code> দাও (শুধু ব্যক্তিগত ব্যবহারের জন্য নিরাপদ)।
+          </div>
+        </div>
+      </div>
+
+      <div class="settings-section">
+        <div class="settings-label">✈️ Telegram Bot সংযোগ</div>
+        <div class="card">
+          <div class="form-group">
+            <label>Bot Token</label>
+            <input type="text" id="tg-token" placeholder="@BotFather থেকে নাও">
+          </div>
+          <div class="form-group">
+            <label>Chat ID</label>
+            <input type="text" id="tg-chat" placeholder="তোমার Telegram Chat ID">
+          </div>
+          <div class="settings-row">
+            <button class="btn-sm" onclick="saveTelegram()">সংরক্ষণ করো</button>
+            <button class="btn-sm" onclick="testTelegram()" style="background: linear-gradient(135deg,#3ecf8e,#059669)">টেস্ট করো</button>
+            <span id="tg-status"></span>
+          </div>
+          <div style="font-size:12px; color:var(--muted); margin-top:10px; line-height:1.6">
+            ℹ️ Chat ID পেতে: Telegram এ <a href="https://t.me/userinfobot" target="_blank" style="color:var(--accent)">@userinfobot</a> তে /start পাঠাও
+          </div>
+        </div>
+      </div>
+
+      <div class="settings-section">
+        <div class="settings-label">📋 তথ্য রপ্তানি</div>
+        <div class="card" style="display:flex; gap:10px; flex-wrap:wrap">
+          <button class="btn-sm" onclick="exportData()">💾 সব ডেটা Export করো</button>
+          <button class="btn-sm" onclick="document.getElementById('import-input').click()" style="background:var(--card); border:1px solid var(--border); color:var(--text)">📂 Import করো</button>
+          <input type="file" id="import-input" accept=".json" style="display:none" onchange="importData(event)">
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════ MODALS ══════════════ -->
+
+<!-- Diary Modal -->
+<div class="modal-overlay" id="diary-modal">
+  <div class="modal">
+    <div class="modal-header">
+      <div class="modal-title" id="diary-modal-title">নতুন ডায়েরি লেখা</div>
+      <button class="modal-close" onclick="closeModal('diary-modal')">✕</button>
+    </div>
+    <div class="form-group">
+      <label>তারিখ</label>
+      <input type="date" id="diary-date">
+    </div>
+    <div class="form-group">
+      <label>মনের অবস্থা</label>
+      <div class="mood-row" id="mood-row">
+        <button class="mood-btn" onclick="selectMood(this,'😊')">😊 ভালো</button>
+        <button class="mood-btn" onclick="selectMood(this,'😐')">😐 সাধারণ</button>
+        <button class="mood-btn" onclick="selectMood(this,'😔')">😔 খারাপ</button>
+        <button class="mood-btn" onclick="selectMood(this,'😡')">😡 রাগ</button>
+        <button class="mood-btn" onclick="selectMood(this,'😰')">😰 চিন্তা</button>
+      </div>
+    </div>
+    <div class="form-group">
+      <label>আজকের কথা</label>
+      <textarea id="diary-text" placeholder="আজকে কেমন কাটলো..."></textarea>
+    </div>
+    <div class="form-group">
+      <label>Drive document link (optional)</label>
+      <input type="text" id="diary-drive-url" placeholder="এই দিনের document link paste করো">
+    </div>
+    <div class="modal-actions">
+      <button class="btn-secondary" onclick="closeModal('diary-modal')">বাতিল</button>
+      <button class="btn-sm" onclick="saveDiaryEntry()">সংরক্ষণ</button>
+    </div>
+  </div>
+</div>
+
+<!-- Hisab Modal -->
+<div class="modal-overlay" id="hisab-modal">
+  <div class="modal">
+    <div class="modal-header">
+      <div class="modal-title">লেনদেন যোগ করো</div>
+      <button class="modal-close" onclick="closeModal('hisab-modal')">✕</button>
+    </div>
+    <div class="form-group">
+      <label>ধরন</label>
+      <select id="trans-type">
+        <option value="income">💚 আয়</option>
+        <option value="expense">❤️ খরচ</option>
+      </select>
+    </div>
+    <div class="form-group">
+      <label>বিবরণ</label>
+      <input type="text" id="trans-title" placeholder="কীসের আয়/খরচ?">
+    </div>
+    <div class="form-group">
+      <label>পরিমাণ (টাকা)</label>
+      <input type="number" id="trans-amount" placeholder="০">
+    </div>
+    <div class="form-group">
+      <label>বিভাগ</label>
+      <select id="trans-cat">
+        <option value="🍔 খাবার">🍔 খাবার</option>
+        <option value="🚗 যাতায়াত">🚗 যাতায়াত</option>
+        <option value="🏠 বাড়ি">🏠 বাড়ি</option>
+        <option value="💊 স্বাস্থ্য">💊 স্বাস্থ্য</option>
+        <option value="📚 শিক্ষা">📚 শিক্ষা</option>
+        <option value="💼 বেতন">💼 বেতন</option>
+        <option value="🎁 উপহার">🎁 উপহার</option>
+        <option value="📦 অন্যান্য">📦 অন্যান্য</option>
+      </select>
+    </div>
+    <div class="form-group">
+      <label>তারিখ</label>
+      <input type="date" id="trans-date">
+    </div>
+    <div class="modal-actions">
+      <button class="btn-secondary" onclick="closeModal('hisab-modal')">বাতিল</button>
+      <button class="btn-sm" onclick="saveTransaction()">সংরক্ষণ</button>
+    </div>
+  </div>
+</div>
+
+<!-- Task Modal -->
+<div class="modal-overlay" id="task-modal">
+  <div class="modal">
+    <div class="modal-header">
+      <div class="modal-title">নতুন কাজ</div>
+      <button class="modal-close" onclick="closeModal('task-modal')">✕</button>
+    </div>
+    <div class="form-group">
+      <label>কাজের নাম</label>
+      <input type="text" id="task-title" placeholder="কী করতে হবে?">
+    </div>
+    <div class="form-group">
+      <label>বিস্তারিত</label>
+      <textarea id="task-desc" placeholder="বিস্তারিত লিখতে পারো..." style="min-height:70px"></textarea>
+    </div>
+    <div class="form-group">
+      <label>অগ্রাধিকার</label>
+      <select id="task-priority">
+        <option value="high">🔴 জরুরি</option>
+        <option value="medium" selected>🟡 মাঝারি</option>
+        <option value="low">🟢 কম</option>
+      </select>
+    </div>
+    <div class="form-group">
+      <label>শেষ তারিখ</label>
+      <input type="date" id="task-due">
+    </div>
+    <div class="form-group">
+      <label>রিমাইন্ডার সময়</label>
+      <input type="time" id="task-time">
+    </div>
+    <div class="modal-actions">
+      <button class="btn-secondary" onclick="closeModal('task-modal')">বাতিল</button>
+      <button class="btn-sm" onclick="saveTask()">সংরক্ষণ</button>
+    </div>
+  </div>
+</div>
+
+<!-- View Diary Entry Modal -->
+<div class="modal-overlay" id="view-diary-modal">
+  <div class="modal">
+    <div class="modal-header">
+      <div class="modal-title" id="view-diary-date"></div>
+      <button class="modal-close" onclick="closeModal('view-diary-modal')">✕</button>
+    </div>
+    <div id="view-diary-mood" style="margin-bottom:12px; font-size:20px"></div>
+    <div id="view-diary-text" style="line-height:1.8; color:var(--text)"></div>
+    <div class="modal-actions">
+      <button class="btn-danger" id="delete-diary-btn">মুছে ফেলো</button>
+      <button class="btn-secondary" onclick="closeModal('view-diary-modal')">বন্ধ</button>
+    </div>
+  </div>
+</div>
+
+<div id="toast-container"></div>
+
+<script>
+// ══════════════════════════════════════════
+//  CONFIG
+// ══════════════════════════════════════════
+const DEFAULT_PWD = 'vault2024'; // প্রথমবার এই পাসওয়ার্ড দিয়ে ঢুকো, পরে বদলাও
+const STORAGE_KEY = 'vault_data';
+const DEFAULT_FIREBASE_CONFIG = {
+  apiKey: 'AIzaSyBavlgUFCnCkJOBM6YzhybM154sLIa1gUk',
+  authDomain: 'amar-vault.firebaseapp.com',
+  databaseURL: 'https://amar-vault-default-rtdb.asia-southeast1.firebasedatabase.app',
+  projectId: 'amar-vault'
+};
+const MAX_FIREBASE_DOC_BYTES = 7 * 1024 * 1024;
+
+// ══════════════════════════════════════════
+//  STATE
+// ══════════════════════════════════════════
+let DB = {
+  password: DEFAULT_PWD,
+  docs: [],
+  diary: [],
+  transactions: [],
+  tasks: [],
+  settings: { tgToken: '', tgChatId: '', fbConfig: null }
+};
+let currentMood = '';
+let hisabFilter = 'all';
+let taskFilter = 'all';
+let editingDiaryId = null;
+
+// ══════════════════════════════════════════
+//  PERSISTENCE
+// ══════════════════════════════════════════
+function getLocalDBSnapshot() {
+  return {
+    ...DB,
+    docs: (DB.docs || []).map(({ data, ...meta }) => meta)
+  };
+}
+
+function _localSaveDB() {
+  try {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(getLocalDBSnapshot()));
+  } catch(e) {
+    console.warn('localStorage save failed:', e);
+  }
+}
+function loadDB() {
+  try {
+    const raw = localStorage.getItem(STORAGE_KEY);
+    if (raw) {
+      const parsed = JSON.parse(raw);
+      DB = { ...DB, ...parsed };
+    }
+  } catch(e) {}
+}
+
+// ══════════════════════════════════════════
+//  AUTH
+// ══════════════════════════════════════════
+let fbApp = null, fbDb = null;
+
+loadDB();
+
+(function autoLogin() {
+  const today = new Date().toISOString().slice(0,10);
+  if (localStorage.getItem('vault_last_login') === today) {
+    enterApp();
+  }
+})();
+
+function tryLogin() {
+  const val = document.getElementById('pwd-input').value;
+  if (val === DB.password) {
+    localStorage.setItem('vault_last_login', new Date().toISOString().slice(0,10));
+    enterApp();
+  } else {
+    const err = document.getElementById('auth-error');
+    err.textContent = '❌ পাসওয়ার্ড ভুল হয়েছে';
+    setTimeout(() => err.textContent = '', 3000);
+  }
+}
+
+document.getElementById('pwd-input').addEventListener('keydown', e => {
+  if (e.key === 'Enter') tryLogin();
+});
+
+async function tryFingerprint() {
+  try {
+    const credId = localStorage.getItem('vault_fp_cred');
+    if (!credId) { showToast('আঙুলের ছাপ নিবন্ধিত নেই', 'error'); return; }
+    const credential = await navigator.credentials.get({
+      publicKey: {
+        challenge: crypto.getRandomValues(new Uint8Array(32)),
+        allowCredentials: [{ id: Uint8Array.from(atob(credId), c => c.charCodeAt(0)), type: 'public-key' }],
+        timeout: 60000, userVerification: 'required'
+      }
+    });
+    if (credential) {
+      localStorage.setItem('vault_last_login', new Date().toISOString().slice(0,10));
+      enterApp();
+    }
+  } catch(e) {
+    showToast('আঙুলের ছাপ যাচাই ব্যর্থ', 'error');
+  }
+}
+
+// Fingerprint registration (called from settings)
+async function registerFingerprint() {
+  if (!window.PublicKeyCredential) {
+    showToast('এই ব্রাউজার সমর্থন করে না', 'error'); return;
+  }
+  try {
+    const cred = await navigator.credentials.create({
+      publicKey: {
+        challenge: crypto.getRandomValues(new Uint8Array(32)),
+        rp: { name: 'আমার ভল্ট' },
+        user: { id: crypto.getRandomValues(new Uint8Array(16)), name: 'vault_user', displayName: 'ভল্ট ব্যবহারকারী' },
+        pubKeyCredParams: [{ alg: -7, type: 'public-key' }],
+        timeout: 60000, userVerification: 'required',
+        authenticatorSelection: { authenticatorAttachment: 'platform', userVerification: 'required' }
+      }
+    });
+    const b64 = btoa(String.fromCharCode(...new Uint8Array(cred.rawId)));
+    localStorage.setItem('vault_fp_cred', b64);
+    document.getElementById('fp-btn').style.display = 'block';
+    showToast('✅ আঙুলের ছাপ নিবন্ধিত হয়েছে!');
+  } catch(e) {
+    showToast('নিবন্ধন ব্যর্থ: ' + e.message, 'error');
+  }
+}
+
+function enterApp() {
+  document.getElementById('auth-screen').style.display = 'none';
+  document.getElementById('app').style.display = 'flex';
+  loadSettings();
+  renderAll();
+  checkTaskReminders();
+  // load fingerprint button on auth screen
+  if (localStorage.getItem('vault_fp_cred')) {
+    document.getElementById('fp-btn').style.display = 'block';
+  }
+}
+
+function logout() {
+  document.getElementById('auth-screen').style.display = 'flex';
+  document.getElementById('app').style.display = 'none';
+  document.getElementById('pwd-input').value = '';
+}
+
+function changePwd() {
+  const np = document.getElementById('new-pwd').value;
+  const cp = document.getElementById('confirm-pwd').value;
+  if (!np) { showToast('নতুন পাসওয়ার্ড লেখো', 'error'); return; }
+  if (np !== cp) { showToast('পাসওয়ার্ড মিলছে না', 'error'); return; }
+  if (np.length < 4) { showToast('কমপক্ষে ৪ অক্ষর দাও', 'error'); return; }
+  DB.password = np;
+  saveDB();
+  showToast('✅ পাসওয়ার্ড বদলানো হয়েছে');
+  document.getElementById('new-pwd').value = '';
+  document.getElementById('confirm-pwd').value = '';
+}
+
+// ══════════════════════════════════════════
+//  TAB NAVIGATION
+// ══════════════════════════════════════════
+function showTab(name) {
+  document.querySelectorAll('.nav-tab').forEach((t,i) => {
+    t.classList.toggle('active', ['docs','diary','hisab','tasks','settings'][i] === name);
+  });
+  document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+  document.getElementById('section-' + name).classList.add('active');
+}
+
+// ══════════════════════════════════════════
+//  RENDER ALL
+// ══════════════════════════════════════════
+function renderAll() {
+  renderDocs();
+  renderDiary();
+  renderHisab();
+  renderTasks();
+}
+
+// ══════════════════════════════════════════
+//  DOCUMENTS
+// ══════════════════════════════════════════
+const FILE_ICONS = {
+  pdf: '📄', jpg: '🖼️', jpeg: '🖼️', png: '🖼️', gif: '🖼️',
+  doc: '📝', docx: '📝', xls: '📊', xlsx: '📊',
+  ppt: '📋', pptx: '📋', mp4: '🎬', mp3: '🎵', zip: '📦', default: '📁'
+};
+
+function getIcon(name) {
+  const ext = (name.split('.').pop() || '').toLowerCase();
+  return FILE_ICONS[ext] || FILE_ICONS.default;
+}
+
+function escapeHtml(value) {
+  return String(value || '').replace(/[&<>"']/g, ch => ({
+    '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'
+  }[ch]));
+}
+
+function saveDriveDocLink() {
+  const title = document.getElementById('drive-doc-title').value.trim();
+  const date = document.getElementById('drive-doc-date').value;
+  const url = document.getElementById('drive-doc-url').value.trim();
+  const note = document.getElementById('drive-doc-note').value.trim();
+  if (!title || !url) {
+    showToast('বিষয় এবং Google Drive link দাও', 'error');
+    return;
+  }
+  if (!/^https:\/\/(drive|docs)\.google\.com\//i.test(url)) {
+    showToast('Google Drive/Docs link দাও', 'error');
+    return;
+  }
+  DB.docs.push({
+    id: Date.now() + Math.random(),
+    kind: 'drive-link',
+    name: title,
+    date: date || new Date().toISOString().slice(0,10),
+    url,
+    note,
+    category: '🔗 Drive link'
+  });
+  document.getElementById('drive-doc-title').value = '';
+  document.getElementById('drive-doc-date').value = '';
+  document.getElementById('drive-doc-url').value = '';
+  document.getElementById('drive-doc-note').value = '';
+  saveDB(); renderDocs();
+  showToast('Drive link সংরক্ষণ হয়েছে');
+}
+
+function renderDocs() {
+  const grid = document.getElementById('doc-grid');
+  const filterRow = document.getElementById('doc-filter-row');
+  if (!DB.docs.length) {
+    grid.innerHTML = '<div class="empty-state"><div class="empty-icon">🔗</div><div class="empty-text">এখনো কোনো Drive document link রাখা হয়নি। উপরের form থেকে link সংরক্ষণ করো।</div></div>';
+    filterRow.innerHTML = '';
+    return;
+  }
+  const dates = [...new Set(DB.docs.map(d => d.date).filter(Boolean))].sort().reverse();
+  filterRow.innerHTML = `<button class="filter-chip active" onclick="filterDocs('all',this)">সব (${DB.docs.length})</button>` +
+    dates.slice(0, 8).map(d => `<button class="filter-chip" onclick="filterDocs('${d}',this)">${formatDate(d)}</button>`).join('');
+  renderDocGrid('all');
+}
+
+function filterDocs(value, btn) {
+  document.querySelectorAll('#doc-filter-row .filter-chip').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  renderDocGrid(value);
+}
+
+function renderDocGrid(value) {
+  const grid = document.getElementById('doc-grid');
+  const docs = value === 'all' ? DB.docs : DB.docs.filter(d => d.date === value || d.category === value);
+  grid.innerHTML = docs.map(d => `
+    <div class="doc-item">
+      <div class="doc-icon">${d.url ? '🔗' : getIcon(d.name || '')}</div>
+      <div class="doc-name">
+        <strong>${escapeHtml((d.name || 'Untitled').length > 32 ? d.name.substring(0,30)+'…' : d.name || 'Untitled')}</strong>
+        ${d.date ? `<span>${formatDate(d.date)}</span>` : ''}
+        ${d.note ? `<span>${escapeHtml(d.note.length > 70 ? d.note.substring(0,68)+'…' : d.note)}</span>` : ''}
+      </div>
+      <div class="doc-actions">
+        ${d.url ? `<button class="btn-icon" onclick="openDriveDoc('${d.id}')">↗</button>` : `<button class="btn-icon" onclick="viewDoc('${d.id}')">👁</button>`}
+        <button class="btn-icon" style="color:var(--red)" onclick="deleteDoc('${d.id}')">🗑</button>
+      </div>
+    </div>`).join('');
+}
+
+function openDriveDoc(id) {
+  const d = DB.docs.find(x => x.id == id); if (!d || !d.url) return;
+  window.open(d.url, '_blank');
+}
+
+function formatSize(bytes) {
+  if (!bytes) return '';
+  if (bytes < 1024) return bytes + ' B';
+  if (bytes < 1024*1024) return (bytes/1024).toFixed(1) + ' KB';
+  return (bytes/1024/1024).toFixed(1) + ' MB';
+}
+
+async function getDocData(id) {
+  const d = DB.docs.find(x => x.id == id);
+  if (!d) return null;
+  if (d.data) return d.data;
+  showToast('পুরনো upload file data পাওয়া যায়নি। Drive link ব্যবহার করো।', 'error');
+  return null;
+}
+
+async function downloadDoc(id) {
+  const d = DB.docs.find(x => x.id == id); if (!d) return;
+  if (d.url) { openDriveDoc(id); return; }
+  const data = await getDocData(id); if (!data) return;
+  const a = document.createElement('a');
+  a.href = data; a.download = d.name; a.click();
+}
+
+async function viewDoc(id) {
+  const d = DB.docs.find(x => x.id == id); if (!d) return;
+  if (d.url) { openDriveDoc(id); return; }
+  const data = await getDocData(id); if (!data) return;
+  const w = window.open(); w.document.write(`<title>${escapeHtml(d.name)}</title><body style="background:#111;display:flex;justify-content:center;align-items:center;min-height:100vh;margin:0">
+    ${d.type && d.type.startsWith('image/') ? `<img src="${data}" style="max-width:100%;max-height:100vh">` :
+      d.type === 'application/pdf' ? `<iframe src="${data}" style="width:100vw;height:100vh;border:none"></iframe>` :
+      `<p style="color:#fff;font-family:sans-serif">এই ফাইল সরাসরি দেখা যাবে না। ডাউনলোড করো।</p>`}
+  </body>`);
+}
+
+async function deleteDoc(id) {
+  if (!confirm('এই document reference মুছে ফেলবো?')) return;
+  DB.docs = DB.docs.filter(d => d.id != id);
+  if (fbDb && window._fbRemove) {
+    try { await window._fbRemove(window._fbRef(fbDb, `vault/docFiles/${id}`)); } catch(e) {}
+  }
+  saveDB(); renderDocs();
+}
+
+// ══════════════════════════════════════════
+//  DIARY
+// ══════════════════════════════════════════
+function openDiaryModal(id) {
+  editingDiaryId = id || null;
+  const today = new Date().toISOString().slice(0,10);
+  document.getElementById('diary-modal-title').textContent = id ? 'ডায়েরি সম্পাদনা' : 'নতুন ডায়েরি লেখা';
+  document.getElementById('diary-date').value = today;
+  document.getElementById('diary-text').value = '';
+  document.getElementById('diary-drive-url').value = '';
+  currentMood = '';
+  document.querySelectorAll('.mood-btn').forEach(b => b.classList.remove('selected'));
+  if (id) {
+    const entry = DB.diary.find(e => e.id == id);
+    if (entry) {
+      document.getElementById('diary-date').value = entry.date;
+      document.getElementById('diary-text').value = entry.text;
+      document.getElementById('diary-drive-url').value = entry.driveUrl || '';
+      currentMood = entry.mood;
+      document.querySelectorAll('.mood-btn').forEach(b => {
+        if (b.textContent.startsWith(entry.mood)) b.classList.add('selected');
+      });
+    }
+  }
+  document.getElementById('diary-modal').classList.add('show');
+}
+
+function selectMood(btn, mood) {
+  document.querySelectorAll('.mood-btn').forEach(b => b.classList.remove('selected'));
+  btn.classList.add('selected');
+  currentMood = mood;
+}
+
+function saveDiaryEntry() {
+  const date = document.getElementById('diary-date').value;
+  const text = document.getElementById('diary-text').value.trim();
+  const driveUrl = document.getElementById('diary-drive-url').value.trim();
+  if (!text) { showToast('কিছু লেখো!', 'error'); return; }
+  if (driveUrl && !/^https:\/\/(drive|docs)\.google\.com\//i.test(driveUrl)) { showToast('Google Drive/Docs link দাও', 'error'); return; }
+  if (editingDiaryId) {
+    const idx = DB.diary.findIndex(e => e.id == editingDiaryId);
+    if (idx >= 0) DB.diary[idx] = { ...DB.diary[idx], date, text, mood: currentMood, driveUrl };
+  } else {
+    DB.diary.unshift({ id: Date.now(), date, text, mood: currentMood, driveUrl, created: new Date().toISOString() });
+  }
+  saveDB(); renderDiary();
+  closeModal('diary-modal');
+  showToast('✅ ডায়েরি সংরক্ষিত');
+  sendTelegram(`📔 নতুন ডায়েরি (${date})\n${currentMood}\n\n${text.substring(0,200)}${text.length>200?'…':''}`);
+}
+
+function renderDiary() {
+  const list = document.getElementById('diary-list');
+  if (!DB.diary.length) {
+    list.innerHTML = '<div class="empty-state"><div class="empty-icon">📔</div><div class="empty-text">কোনো লেখা নেই। প্রথম লেখা শুরু করো!</div></div>';
+    return;
+  }
+  list.innerHTML = DB.diary.map(e => `
+    <div class="diary-entry-preview" onclick="viewDiary(${e.id})">
+      <div class="diary-date">${formatDate(e.date)}</div>
+      <div class="diary-preview-text">${e.text.substring(0,120)}${e.text.length>120?'…':''}</div>
+      ${e.mood ? `<div class="diary-mood">${e.mood}</div>` : ''}
+    </div>`).join('');
+}
+
+function viewDiary(id) {
+  const e = DB.diary.find(x => x.id == id); if (!e) return;
+  document.getElementById('view-diary-date').textContent = formatDate(e.date);
+  document.getElementById('view-diary-mood').textContent = e.mood || '';
+  document.getElementById('view-diary-text').innerHTML = e.text.replace(/\n/g,'<br>') + (e.driveUrl ? `<br><br><button class="btn-sm" onclick="window.open('${escapeHtml(e.driveUrl)}','_blank')">🔗 Drive document খুলুন</button>` : '');
+  document.getElementById('delete-diary-btn').onclick = () => {
+    if (confirm('এই লেখা মুছে ফেলবো?')) {
+      DB.diary = DB.diary.filter(x => x.id != id);
+      saveDB(); renderDiary(); closeModal('view-diary-modal');
+    }
+  };
+  document.getElementById('view-diary-modal').classList.add('show');
+}
+
+// ══════════════════════════════════════════
+//  HISAB (TRANSACTIONS)
+// ══════════════════════════════════════════
+function openHisabModal() {
+  document.getElementById('trans-date').value = new Date().toISOString().slice(0,10);
+  document.getElementById('trans-title').value = '';
+  document.getElementById('trans-amount').value = '';
+  document.getElementById('hisab-modal').classList.add('show');
+}
+
+function saveTransaction() {
+  const title = document.getElementById('trans-title').value.trim();
+  const amount = parseFloat(document.getElementById('trans-amount').value);
+  const type = document.getElementById('trans-type').value;
+  const cat = document.getElementById('trans-cat').value;
+  const date = document.getElementById('trans-date').value;
+  if (!title) { showToast('বিবরণ লেখো', 'error'); return; }
+  if (!amount || amount <= 0) { showToast('সঠিক পরিমাণ দাও', 'error'); return; }
+  DB.transactions.unshift({ id: Date.now(), title, amount, type, cat, date, created: new Date().toISOString() });
+  saveDB(); renderHisab();
+  closeModal('hisab-modal');
+  showToast('✅ লেনদেন যোগ হয়েছে');
+  sendTelegram(`💰 নতুন লেনদেন\n${type === 'income' ? '📈 আয়' : '📉 খরচ'}: ৳${amount}\n${title}\n${cat}`);
+}
+
+function renderHisab() {
+  const trans = DB.transactions;
+  const income = trans.filter(t => t.type === 'income').reduce((s,t) => s+t.amount, 0);
+  const expense = trans.filter(t => t.type === 'expense').reduce((s,t) => s+t.amount, 0);
+  document.getElementById('total-income').textContent = '৳' + income.toLocaleString('bn-BD');
+  document.getElementById('total-expense').textContent = '৳' + expense.toLocaleString('bn-BD');
+  const bal = income - expense;
+  const balEl = document.getElementById('total-balance');
+  balEl.textContent = '৳' + Math.abs(bal).toLocaleString('bn-BD');
+  balEl.style.color = bal >= 0 ? 'var(--green)' : 'var(--red)';
+  renderTransList(hisabFilter);
+}
+
+function filterHisab(type, btn) {
+  document.querySelectorAll('#section-hisab .filter-chip').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  hisabFilter = type;
+  renderTransList(type);
+}
+
+function renderTransList(filter) {
+  const list = document.getElementById('trans-list');
+  let trans = DB.transactions;
+  if (filter !== 'all') trans = trans.filter(t => t.type === filter);
+  if (!trans.length) {
+    list.innerHTML = '<div class="empty-state"><div class="empty-icon">💰</div><div class="empty-text">কোনো লেনদেন নেই।</div></div>';
+    return;
+  }
+  list.innerHTML = trans.map(t => `
+    <div class="trans-item">
+      <div class="trans-left">
+        <div class="trans-cat ${t.type}">${t.cat.split(' ')[0]}</div>
+        <div>
+          <div class="trans-title">${t.title}</div>
+          <div class="trans-date">${formatDate(t.date)} · ${t.cat}</div>
+        </div>
+      </div>
+      <div style="display:flex;align-items:center;gap:10px">
+        <div class="trans-amount ${t.type}">${t.type==='income'?'+':'-'}৳${t.amount.toLocaleString('bn-BD')}</div>
+        <button class="btn-danger" onclick="deleteTrans(${t.id})">✕</button>
+      </div>
+    </div>`).join('');
+}
+
+function deleteTrans(id) {
+  if (!confirm('মুছে ফেলবো?')) return;
+  DB.transactions = DB.transactions.filter(t => t.id != id);
+  saveDB(); renderHisab();
+}
+
+// ══════════════════════════════════════════
+//  TASKS
+// ══════════════════════════════════════════
+function openTaskModal() {
+  document.getElementById('task-title').value = '';
+  document.getElementById('task-desc').value = '';
+  document.getElementById('task-due').value = '';
+  document.getElementById('task-time').value = '';
+  document.getElementById('task-modal').classList.add('show');
+}
+
+function saveTask() {
+  const title = document.getElementById('task-title').value.trim();
+  if (!title) { showToast('কাজের নাম লেখো', 'error'); return; }
+  const task = {
+    id: Date.now(),
+    title,
+    desc: document.getElementById('task-desc').value,
+    priority: document.getElementById('task-priority').value,
+    due: document.getElementById('task-due').value,
+    time: document.getElementById('task-time').value,
+    done: false,
+    created: new Date().toISOString()
+  };
+  DB.tasks.unshift(task);
+  saveDB(); renderTasks();
+  closeModal('task-modal');
+  showToast('✅ কাজ যোগ হয়েছে');
+  sendTelegram(`✅ নতুন কাজ যোগ হয়েছে\n📌 ${title}\n${task.priority === 'high' ? '🔴 জরুরি' : task.priority === 'medium' ? '🟡 মাঝারি' : '🟢 সাধারণ'}${task.due ? `\n📅 ${formatDate(task.due)}` : ''}`);
+}
+
+function toggleTask(id) {
+  const t = DB.tasks.find(x => x.id == id); if (!t) return;
+  t.done = !t.done;
+  saveDB(); renderTasks();
+  if (t.done) sendTelegram(`✅ কাজ সম্পন্ন!\n📌 ${t.title}`);
+}
+
+function renderTasks() {
+  const list = document.getElementById('task-list');
+  let tasks = DB.tasks;
+  if (taskFilter === 'pending') tasks = tasks.filter(t => !t.done);
+  else if (taskFilter === 'done') tasks = tasks.filter(t => t.done);
+  else if (taskFilter === 'high') tasks = tasks.filter(t => t.priority === 'high');
+
+  const sorted = [...tasks].sort((a,b) => {
+    if (a.done !== b.done) return a.done ? 1 : -1;
+    const pOrder = {high:0, medium:1, low:2};
+    return (pOrder[a.priority]||1) - (pOrder[b.priority]||1);
+  });
+
+  if (!sorted.length) {
+    list.innerHTML = '<div class="empty-state"><div class="empty-icon">✅</div><div class="empty-text">এখানে কোনো কাজ নেই।</div></div>';
+    return;
+  }
+  list.innerHTML = sorted.map(t => `
+    <div class="task-item ${t.done ? 'done' : ''}">
+      <div class="task-check ${t.done ? 'done' : ''}" onclick="toggleTask(${t.id})">${t.done ? '✓' : ''}</div>
+      <div class="task-body">
+        <div class="task-title">${t.title}
+          <span class="task-priority ${t.priority}">${t.priority === 'high' ? 'জরুরি' : t.priority === 'medium' ? 'মাঝারি' : 'কম'}</span>
+        </div>
+        ${t.desc ? `<div class="task-meta">${t.desc}</div>` : ''}
+        ${t.due ? `<div class="task-meta">📅 ${formatDate(t.due)}${t.time ? ' · ⏰ '+t.time : ''}</div>` : ''}
+      </div>
+      <button class="btn-danger" onclick="deleteTask(${t.id})">✕</button>
+    </div>`).join('');
+}
+
+function filterTasks(type, btn) {
+  document.querySelectorAll('#section-tasks .filter-chip').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  taskFilter = type;
+  renderTasks();
+}
+
+function deleteTask(id) {
+  if (!confirm('মুছে ফেলবো?')) return;
+  DB.tasks = DB.tasks.filter(t => t.id != id);
+  saveDB(); renderTasks();
+}
+
+function checkTaskReminders() {
+  const now = new Date();
+  const today = now.toISOString().slice(0,10);
+  const hhmm = now.toTimeString().slice(0,5);
+  DB.tasks.filter(t => !t.done && t.due === today && t.time === hhmm).forEach(t => {
+    showToast(`⏰ রিমাইন্ডার: ${t.title}`, 'success');
+    sendTelegram(`⏰ রিমাইন্ডার!\n📌 ${t.title}\n💬 ${t.desc || ''}`);
+  });
+  setTimeout(checkTaskReminders, 60000);
+}
+
+// ══════════════════════════════════════════
+//  SETTINGS
+// ══════════════════════════════════════════
+function loadSettings() {
+  DB.settings = DB.settings || {};
+  const s = DB.settings;
+  document.getElementById('tg-token').value = s.tgToken || '';
+  document.getElementById('tg-chat').value = s.tgChatId || '';
+  if (!s.fbConfig && DEFAULT_FIREBASE_CONFIG) {
+    s.fbConfig = DEFAULT_FIREBASE_CONFIG;
+    _localSaveDB();
+  }
+  if (s.fbConfig) {
+    document.getElementById('fb-apikey').value = s.fbConfig.apiKey || '';
+    document.getElementById('fb-authdomain').value = s.fbConfig.authDomain || '';
+    document.getElementById('fb-dburl').value = s.fbConfig.databaseURL || '';
+    document.getElementById('fb-projectid').value = s.fbConfig.projectId || '';
+  }
+  if (fbApp) {
+    showFbConnected();
+  } else if (s.fbConfig) {
+    initFirebase(s.fbConfig).then(ok => { if (ok) { showFbConnected(); startFirebaseSync(); pullFromFirebase(); } });
+  }
+}
+
+// ══════════════════════════════════════════
+//  FIREBASE
+// ══════════════════════════════════════════
+// fbApp/fbDb declared near top to avoid TDZ on autoLogin
+async function initFirebase(cfg) {
+  try {
+    // Firebase SDK dynamically import
+    const { initializeApp, getApps } = await import('https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js');
+    const { getDatabase, ref, set, get, onValue, remove } = await import('https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js');
+    const existing = getApps();
+    fbApp = existing.length ? existing[0] : initializeApp(cfg);
+    fbDb = getDatabase(fbApp);
+    window._fbRef = ref;
+    window._fbSet = set;
+    window._fbGet = get;
+    window._fbOnValue = onValue;
+    window._fbRemove = remove;
+    return true;
+  } catch(e) {
+    console.error('Firebase init error:', e);
+    return false;
+  }
+}
+
+async function connectFirebase() {
+  const cfg = {
+    apiKey:      document.getElementById('fb-apikey').value.trim(),
+    authDomain:  document.getElementById('fb-authdomain').value.trim(),
+    databaseURL: document.getElementById('fb-dburl').value.trim(),
+    projectId:   document.getElementById('fb-projectid').value.trim(),
+  };
+  if (!cfg.apiKey || !cfg.databaseURL || !cfg.projectId) {
+    showToast('সব তথ্য পূরণ করো', 'error'); return;
+  }
+  document.getElementById('fb-status').innerHTML = '<span class="status-badge" style="background:rgba(251,191,36,0.15);color:var(--yellow)">⏳ সংযোগ হচ্ছে...</span>';
+  const ok = await initFirebase(cfg);
+  if (!ok) {
+    document.getElementById('fb-status').innerHTML = '<span class="status-badge err">✗ ব্যর্থ</span>';
+    showToast('Firebase সংযোগ ব্যর্থ — config যাচাই করো', 'error'); return;
+  }
+  // Test write
+  try {
+    await window._fbSet(window._fbRef(fbDb, 'vault/_ping'), Date.now());
+  } catch(e) {
+    document.getElementById('fb-status').innerHTML = '<span class="status-badge err">✗ লেখার অনুমতি নেই</span>';
+    showToast('Firebase Rules চেক করো (.write: true দাও)', 'error'); return;
+  }
+  DB.settings.fbConfig = cfg;
+  saveDB();
+  showFbConnected();
+  showToast('🔥 Firebase সংযুক্ত হয়েছে!');
+  startFirebaseSync();
+}
+
+function showFbConnected() {
+  document.getElementById('fb-setup-view').style.display = 'none';
+  document.getElementById('fb-connected-view').style.display = 'block';
+  const pid = DB.settings?.fbConfig?.projectId || '';
+  document.getElementById('fb-project-name').textContent = pid;
+  setSyncStatus(true, 'Firebase ✓');
+}
+
+function disconnectFirebase() {
+  if (!confirm('Firebase সংযোগ বিচ্ছিন্ন করবো?')) return;
+  fbApp = null; fbDb = null;
+  delete DB.settings.fbConfig;
+  saveDB();
+  document.getElementById('fb-setup-view').style.display = 'block';
+  document.getElementById('fb-connected-view').style.display = 'none';
+  setSyncStatus(false, 'Disconnected');
+  showToast('Firebase সংযোগ বিচ্ছিন্ন হয়েছে');
+}
+
+async function forceSyncFirebase() {
+  if (!fbDb) { showToast('Firebase সংযুক্ত নেই', 'error'); return; }
+  setSyncStatus(true, 'Sync হচ্ছে...');
+  await pushToFirebase();
+  setSyncStatus(true, 'Synced ✓');
+  showToast('☁️ Firebase এ Sync সম্পন্ন');
+}
+
+async function pushToFirebase() {
+  if (!fbDb) return;
+  try {
+    for (const doc of (DB.docs || [])) {
+      if (doc.data && !doc.remote) {
+        await window._fbSet(window._fbRef(fbDb, `vault/docFiles/${doc.id}`), doc.data);
+        doc.remote = true;
+      }
+    }
+    // race-condition fix: remote-এ যদি নতুন কিছু (যেমন Telegram bot থেকে) যুক্ত হয়ে থাকে,
+    // সেটা push করার আগে merge করে নিচ্ছি যাতে হারিয়ে না যায়
+    try {
+      const snap = await window._fbGet(window._fbRef(fbDb, 'vault/data'));
+      if (snap.exists()) {
+        const remote = snap.val();
+        DB.transactions = mergeById(DB.transactions, remote.transactions);
+        DB.diary        = mergeById(DB.diary, remote.diary);
+        DB.tasks        = mergeById(DB.tasks, remote.tasks);
+      }
+    } catch(e) { /* remote read fail হলেও local দিয়ে এগিয়ে যাই */ }
+
+    const payload = {
+      diary:        DB.diary,
+      transactions: DB.transactions,
+      tasks:        DB.tasks,
+      docsMeta:     (DB.docs || []).map(({ data, ...rest }) => rest),
+      updatedAt:    Date.now()
+    };
+    await window._fbSet(window._fbRef(fbDb, 'vault/data'), payload);
+    saveDB(); renderAll();
+  } catch(e) {
+    setSyncStatus(false, 'Sync ব্যর্থ');
+    showToast('Firebase sync ব্যর্থ: ' + e.message, 'error');
+  }
+}
+
+// দুটো array কে id অনুযায়ী merge করে — কোনোটা হারাবে না
+function mergeById(localArr, remoteArr) {
+  localArr  = localArr  || [];
+  remoteArr = remoteArr || [];
+  const map = new Map();
+  for (const item of remoteArr) map.set(String(item.id), item);
+  for (const item of localArr)  map.set(String(item.id), item); // local পরিবর্তন প্রাধান্য পাবে
+  return Array.from(map.values()).sort((a,b) => (b.id||0) - (a.id||0));
+}
+
+async function pullFromFirebase() {
+  if (!fbDb) return;
+  try {
+    const snap = await window._fbGet(window._fbRef(fbDb, 'vault/data'));
+    if (snap.exists()) {
+      const d = snap.val();
+      if (d.diary)        DB.diary        = d.diary;
+      if (d.transactions) DB.transactions = d.transactions;
+      if (d.tasks)        DB.tasks        = d.tasks;
+      if (d.docsMeta)     mergeDocsMeta(d.docsMeta);
+      saveDB(); renderAll();
+      setSyncStatus(true, 'Synced ✓');
+    }
+  } catch(e) { console.warn('Firebase pull error:', e); }
+}
+
+function mergeDocsMeta(docsMeta) {
+  const existing = new Map((DB.docs || []).map(d => [String(d.id), d]));
+  DB.docs = (docsMeta || []).map(meta => ({ ...meta, data: existing.get(String(meta.id))?.data }));
+}
+
+function startFirebaseSync() {
+  if (!fbDb) return;
+  // Real-time listener — যখনই অন্য device এ কিছু বদলাবে, এখানেও update হবে
+  window._fbOnValue(window._fbRef(fbDb, 'vault/data'), (snap) => {
+    if (!snap.exists()) return;
+    const d = snap.val();
+    if (d.updatedAt && d.updatedAt > (window._lastLocalUpdate || 0)) {
+      if (d.diary)        DB.diary        = d.diary;
+      if (d.transactions) DB.transactions = d.transactions;
+      if (d.tasks)        DB.tasks        = d.tasks;
+      if (d.docsMeta)     mergeDocsMeta(d.docsMeta);
+      saveDB(); renderAll();
+      setSyncStatus(true, 'Real-time ✓');
+    }
+  });
+}
+
+// saveDB — localStorage + Firebase debounced push
+function saveDB() {
+  try { localStorage.setItem(STORAGE_KEY, JSON.stringify(getLocalDBSnapshot())); } catch(e) {}
+  window._lastLocalUpdate = Date.now();
+  if (fbDb) {
+    // debounce — ৫ সেকেন্ড পর পাঠাও
+    clearTimeout(window._fbDebounce);
+    window._fbDebounce = setTimeout(pushToFirebase, 5000);
+  }
+}
+
+function setSyncStatus(ok, text) {
+  const dot = document.getElementById('sync-dot');
+  const txt = document.getElementById('sync-text');
+  dot.className = 'sync-dot' + (ok ? '' : ' offline');
+  txt.textContent = text;
+}
+
+function saveTelegram() {
+  DB.settings.tgToken = document.getElementById('tg-token').value.trim();
+  DB.settings.tgChatId = document.getElementById('tg-chat').value.trim();
+  saveDB();
+  document.getElementById('tg-status').innerHTML = '<span class="status-badge ok">✓ সংরক্ষিত</span>';
+  showToast('✅ Telegram সেটিং সংরক্ষিত');
+}
+
+async function testTelegram() {
+  const ok = await sendTelegram('🔐 আমার ভল্ট থেকে টেস্ট বার্তা!\nসংযোগ সফল হয়েছে ✅');
+  if (ok) document.getElementById('tg-status').innerHTML = '<span class="status-badge ok">✓ কাজ করছে</span>';
+  else document.getElementById('tg-status').innerHTML = '<span class="status-badge err">✗ ব্যর্থ</span>';
+}
+
+async function sendTelegram(msg) {
+  const { tgToken, tgChatId } = DB.settings || {};
+  if (!tgToken || !tgChatId) return false;
+  try {
+    const res = await fetch(`https://api.telegram.org/bot${tgToken}/sendMessage`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ chat_id: tgChatId, text: msg, parse_mode: 'HTML' })
+    });
+    return res.ok;
+  } catch { return false; }
+}
+
+// Telegram incoming poll (check for commands every 30s)
+let tgOffset = 0;
+async function pollTelegram() {
+  const { tgToken } = DB.settings || {};
+  if (!tgToken) { setTimeout(pollTelegram, 30000); return; }
+  try {
+    const res = await fetch(`https://api.telegram.org/bot${tgToken}/getUpdates?offset=${tgOffset}&timeout=5`);
+    const data = await res.json();
+    if (data.ok) {
+      for (const upd of data.result) {
+        tgOffset = upd.update_id + 1;
+        const text = upd.message?.text || '';
+        if (text.startsWith('/')) handleTgCommand(text, upd.message.chat.id);
+      }
+    }
+  } catch {}
+  setTimeout(pollTelegram, 30000);
+}
+
+function handleTgCommand(cmd, chatId) {
+  const { tgToken } = DB.settings;
+  let reply = '';
+  if (cmd === '/hisab') {
+    const income = DB.transactions.filter(t=>t.type==='income').reduce((s,t)=>s+t.amount,0);
+    const expense = DB.transactions.filter(t=>t.type==='expense').reduce((s,t)=>s+t.amount,0);
+    reply = `💰 হিসাবের সারসংক্ষেপ\n📈 আয়: ৳${income}\n📉 খরচ: ৳${expense}\n💵 ব্যালেন্স: ৳${income-expense}`;
+  } else if (cmd === '/tasks') {
+    const pending = DB.tasks.filter(t=>!t.done);
+    reply = `📋 বাকি কাজ (${pending.length}টি)\n` + pending.map(t=>`• ${t.title}`).join('\n') || 'কোনো বাকি কাজ নেই!';
+  } else if (cmd === '/docs') {
+    reply = `📁 মোট ফাইল: ${DB.docs.length}টি`;
+  } else if (cmd === '/help') {
+    reply = `আমার ভল্ট - Commands:\n/hisab - হিসাব দেখো\n/tasks - কাজ দেখো\n/docs - ফাইল সংখ্যা`;
+  } else { reply = 'অজানা কমান্ড। /help লেখো'; }
+  fetch(`https://api.telegram.org/bot${tgToken}/sendMessage`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ chat_id: chatId, text: reply })
+  });
+}
+
+// ══════════════════════════════════════════
+//  EXPORT / IMPORT
+// ══════════════════════════════════════════
+function exportData() {
+  const exportDB = { ...DB, docs: DB.docs.map(d => ({ ...d, data: d.data })) };
+  const blob = new Blob([JSON.stringify(exportDB, null, 2)], { type: 'application/json' });
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = `vault-backup-${new Date().toISOString().slice(0,10)}.json`;
+  a.click();
+  showToast('✅ ডেটা export হয়েছে');
+}
+
+function importData(e) {
+  const file = e.target.files[0]; if (!file) return;
+  const reader = new FileReader();
+  reader.onload = ev => {
+    try {
+      const data = JSON.parse(ev.target.result);
+      if (confirm(`Import করবো? এতে বিদ্যমান ডেটা মুছে যাবে।\nDocs: ${data.docs?.length||0}, Diary: ${data.diary?.length||0}, Hisab: ${data.transactions?.length||0}, Tasks: ${data.tasks?.length||0}`)) {
+        DB = { ...DB, ...data };
+        saveDB(); renderAll(); loadSettings();
+        showToast('✅ ডেটা import হয়েছে');
+      }
+    } catch { showToast('ফাইল পড়তে সমস্যা হয়েছে', 'error'); }
+  };
+  reader.readAsText(file);
+}
+
+// ══════════════════════════════════════════
+//  UTILITIES
+// ══════════════════════════════════════════
+function closeModal(id) { document.getElementById(id).classList.remove('show'); }
+
+function showToast(msg, type = 'success') {
+  const c = document.getElementById('toast-container');
+  const t = document.createElement('div');
+  t.className = `toast ${type}`;
+  t.textContent = msg;
+  c.appendChild(t);
+  setTimeout(() => t.remove(), 3500);
+}
+
+function formatDate(dateStr) {
+  if (!dateStr) return '';
+  try {
+    const d = new Date(dateStr + (dateStr.length === 10 ? 'T00:00:00' : ''));
+    return d.toLocaleDateString('bn-BD', { year: 'numeric', month: 'long', day: 'numeric' });
+  } catch { return dateStr; }
+}
+
+// Telegram polling বন্ধ — Cloudflare Worker webhook এখন bot commands handle করে।
+// website ও worker একসাথে getUpdates করলে Telegram 409 conflict error দেয়।
+// setTimeout(pollTelegram, 5000);
+
+setSyncStatus(true, 'প্রস্তুত');
+</script>
+</body>
+</html>
