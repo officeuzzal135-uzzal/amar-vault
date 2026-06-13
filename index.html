@@ -862,9 +862,17 @@ function loadDB() {
 // ══════════════════════════════════════════
 loadDB();
 
+(function autoLogin() {
+  const today = new Date().toISOString().slice(0,10);
+  if (localStorage.getItem('vault_last_login') === today) {
+    enterApp();
+  }
+})();
+
 function tryLogin() {
   const val = document.getElementById('pwd-input').value;
   if (val === DB.password) {
+    localStorage.setItem('vault_last_login', new Date().toISOString().slice(0,10));
     enterApp();
   } else {
     const err = document.getElementById('auth-error');
@@ -888,7 +896,10 @@ async function tryFingerprint() {
         timeout: 60000, userVerification: 'required'
       }
     });
-    if (credential) enterApp();
+    if (credential) {
+      localStorage.setItem('vault_last_login', new Date().toISOString().slice(0,10));
+      enterApp();
+    }
   } catch(e) {
     showToast('আঙুলের ছাপ যাচাই ব্যর্থ', 'error');
   }
